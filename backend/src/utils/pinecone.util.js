@@ -1,19 +1,23 @@
 import { Pinecone } from '@pinecone-database/pinecone';
 
-const indexName = 'gpt';
-const index = pc.Index(indexName);
+const {
+    PINECONE_API_KEY,
+    PINECONE_INDEX
+} = require('../configs/config');
+
+const index = pc.Index(PINECONE_INDEX);
 
 async function initPineconeConnection() {
     const pc = new Pinecone({
-        apiKey: 'pcsk_4M7Do6_Do176CWueVpaBHkGm9W4uXRoQ862BAmNVLQUwU6ZfPfiyxZYDQN6d8LwSgbpFao'
+        apiKey: PINECONE_API_KEY
     });
 
     const existingIndexes = await pc.listIndexes();
-    const isIndexExist = existingIndexes.includes(indexName);
+    const isIndexExist = existingIndexes.includes(PINECONE_INDEX);
 
     if (!isIndexExist) {
         await pc.createIndexForModel({
-            name: indexName,
+            name: PINECONE_INDEX,
             cloud: 'aws',
             region: 'us-east-1',
             embed: {
