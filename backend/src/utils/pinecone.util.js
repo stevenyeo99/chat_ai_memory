@@ -1,16 +1,18 @@
-import { Pinecone } from '@pinecone-database/pinecone';
+const { Pinecone } = require('@pinecone-database/pinecone');
 
 const {
     PINECONE_API_KEY,
     PINECONE_INDEX
 } = require('../configs/config');
 
-const index = pc.Index(PINECONE_INDEX);
+let pc = null;
 
 async function initPineconeConnection() {
-    const pc = new Pinecone({
+    console.log(PINECONE_API_KEY);
+    pc = new Pinecone({
         apiKey: PINECONE_API_KEY
     });
+    console.log(`pinecone: ${pc}`);
 
     const existingIndexes = await pc.listIndexes();
     const isIndexExist = existingIndexes.includes(PINECONE_INDEX);
@@ -26,10 +28,12 @@ async function initPineconeConnection() {
             },
             waitUntilReady: true,
         });
+        console.log(`Create Pinecone Index: ${PINECONE_INDEX}`);
     }
 }
 
 async function storePineconeData(chunks, fileName, namespace) {
+    const index = pc.Index(PINECONE_INDEX);
     const vectors = chunks.map((chunk, i) => ({
         id: `${fileName}-${Date.now()}-${i}`,
         values: {},
